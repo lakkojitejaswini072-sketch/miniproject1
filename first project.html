@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stopwatch with Lap Timing</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    background:#f4f4f4;
+}
+
+.container{
+    width:400px;
+    background:#fff;
+    padding:25px;
+    border-radius:10px;
+    text-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+#display{
+    font-size:48px;
+    font-weight:bold;
+    margin:20px 0;
+    color:#333;
+}
+
+button{
+    padding:10px 15px;
+    margin:5px;
+    border:none;
+    border-radius:5px;
+    background:#007bff;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+}
+
+button:hover{
+    background:#0056b3;
+}
+
+#lapList{
+    list-style:none;
+    margin-top:15px;
+    text-align:left;
+    max-height:200px;
+    overflow-y:auto;
+}
+
+#lapList li{
+    background:#f1f1f1;
+    margin:5px 0;
+    padding:8px;
+    border-radius:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Stopwatch</h1>
+
+    <div id="display">00:00:00</div>
+
+    <button onclick="startTimer()">Start</button>
+    <button onclick="pauseTimer()">Pause</button>
+    <button onclick="recordLap()">Lap</button>
+    <button onclick="resetTimer()">Reset</button>
+
+    <h2 style="margin-top:20px;">Lap Times</h2>
+    <ul id="lapList"></ul>
+</div>
+
+<script>
+let seconds = 0;
+let timer = null;
+
+// State Recording using Array
+let lapTimes = [];
+
+function updateDisplay() {
+    let hrs = Math.floor(seconds / 3600);
+    let mins = Math.floor((seconds % 3600) / 60);
+    let secs = seconds % 60;
+
+    document.getElementById("display").textContent =
+        String(hrs).padStart(2, '0') + ":" +
+        String(mins).padStart(2, '0') + ":" +
+        String(secs).padStart(2, '0');
+}
+
+function startTimer() {
+    if (timer !== null) return;
+
+    timer = setInterval(() => {
+        seconds++;
+        updateDisplay();
+    }, 1000);
+}
+
+function pauseTimer() {
+    clearInterval(timer);
+    timer = null;
+}
+
+function resetTimer() {
+    clearInterval(timer);
+    timer = null;
+    seconds = 0;
+    lapTimes = [];
+    updateDisplay();
+    renderLaps();
+}
+
+function recordLap() {
+    if (seconds === 0) return;
+
+    // Store lap time in array (State Recording)
+    lapTimes.push(document.getElementById("display").textContent);
+
+    // Render lap list from array
+    renderLaps();
+}
+
+function renderLaps() {
+    const lapList = document.getElementById("lapList");
+    lapList.innerHTML = "";
+
+    lapTimes.forEach((lap, index) => {
+        const li = document.createElement("li");
+        li.textContent = `Lap ${index + 1}: ${lap}`;
+        lapList.appendChild(li);
+    });
+}
+
+updateDisplay();
+</script>
+
+</body>
+</html>
